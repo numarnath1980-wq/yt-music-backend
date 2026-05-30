@@ -1,6 +1,7 @@
 from flask import Flask, request
 import requests
 import os
+from urllib.parse import quote
 
 app = Flask(__name__)
 
@@ -26,7 +27,7 @@ def search():
         "?part=snippet"
         "&type=video"
         "&maxResults=5"
-        f"&q={query}"
+        f"&q={quote(query)}"
         f"&key={API_KEY}"
     )
 

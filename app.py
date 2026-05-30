@@ -19,14 +19,7 @@ def search():
     query = request.args.get("q")
 
     if not query:
-        return {
-            "error": "Missing query"
-        }
-
-    if not API_KEY:
-        return {
-            "error": "YOUTUBE_API_KEY not found"
-        }
+        return {"error": "Missing query"}
 
     url = (
         "https://www.googleapis.com/youtube/v3/search"
@@ -37,22 +30,17 @@ def search():
         f"&key={API_KEY}"
     )
 
-    try:
+    response = requests.get(url).json()
 
-        response = requests.get(url)
+    results = []
 
-        data = response.json()
+    for item in response.get("items", []):
 
-        return {
-            "api_key_loaded": True,
-            "youtube_response": data
-        }
+        results.append({
+            "title": item["snippet"]["title"],
+            "artist": item["snippet"]["channelTitle"],
+            "videoId": item["id"]["videoId"],
+            "thumbnail": item["snippet"]["thumbnails"]["high"]["url"]
+        })
 
-    except Exception as e:
-
-        return {
-            "error": str(e)
-        }
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    return {"results": results}
